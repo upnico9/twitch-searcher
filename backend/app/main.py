@@ -1,6 +1,7 @@
 from fastapi import FastAPI
-from app.core.config import get_settings
-from app.services.twitch import TwitchService
+
+from app.api.search import router as search_router
+from app.api.autocomplete import router as autocomplete_router
 
 app = FastAPI(
         title="Twitch Video Searcher",
@@ -8,15 +9,5 @@ app = FastAPI(
         version="0.1.0",
     )
 
-# settings = get_settings()
-# twitch_service = TwitchService()
-
-# token = twitch_service.get_access_token()
-
-
-# games = twitch_service.autocomplete_games("fifa")
-# print(games)
-
-@app.get("/")
-async def read_root():
-    return {"message": "Hello World"}
+app.include_router(search_router, prefix="/api")
+app.include_router(autocomplete_router, prefix="/api")
