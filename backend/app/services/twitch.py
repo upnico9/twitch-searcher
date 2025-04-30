@@ -84,7 +84,7 @@ class TwitchService:
         url = f"{self.api_base_url}/videos"
         params = {
             'game_id': game_id,
-            'first': 50
+            'first': 50,
         }
 
         if language:
