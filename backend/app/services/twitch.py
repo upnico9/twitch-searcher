@@ -2,6 +2,7 @@ import requests
 from typing import List, Dict
 from app.core.config import get_settings
 from datetime import datetime, timedelta, timezone
+from typing import Optional, List, Dict
 
 settings = get_settings()
 
@@ -66,22 +67,37 @@ class TwitchService:
         
         return data[0]['id']
 
-    def get_videos_by_game_id(self, game_id: str) -> List[Dict]:
+    def get_videos_by_game_id(
+        self,
+        game_id: str,
+        language: Optional[str] = None,
+        sort: Optional[str] = None,
+        period: Optional[str] = None
+    ) -> List[Dict]:
 
         access_token = self.get_access_token()
         headers = {
             'Client-ID': self.client_id,
             'Authorization': f'Bearer {access_token}'
         }
+
         url = f"{self.api_base_url}/videos"
         params = {
             'game_id': game_id,
-            'first': 10 
+            'first': 50
         }
+
+        if language:
+            params['language'] = language
+        if sort in ['time', 'trending', 'views']:
+            params['sort'] = sort
+        if period in ['all', 'day', 'week', 'month']:
+            params['period'] = period
 
         response = requests.get(url, headers=headers, params=params)
         response.raise_for_status()
         return response.json().get('data', [])
+
 
     def search_videos_by_game_name(self, game_name: str) -> List[Dict]:
 
@@ -89,6 +105,8 @@ class TwitchService:
         if not game_id:
             return []
         return self.get_videos_by_game_id(game_id)
+    
+    
     
 
 
